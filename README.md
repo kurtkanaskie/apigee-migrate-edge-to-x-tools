@@ -251,7 +251,7 @@ apigeecli --token=$TOKEN --org=$ORG apis import --folder=$X_IMPORT_DIR/proxies
 apigeecli --token=$TOKEN --org=$ORG sharedflows import --folder=$X_IMPORT_DIR/sharedflows
 
 #########################################
-apigeecli --token=$TOKEN --org=$ORG kvms import --folder=$X_IMPORT_DIR
+apigeecli --token=$TOKEN --org=$ORG kvms import --continue-on-error=true --folder=$X_IMPORT_DIR
 
 #########################################
 # Target Servers
@@ -364,15 +364,6 @@ ORG=apigeex-custom-non-prod
 OK to proceed (Y/n)? Y
 ...
 ```
-
-# Issues
-
-### Issue: KVM import does not continue on error.
-`apigeecli kvms import` looks for keyvaluemap files in the $X_IMPORT_DIR for org level, env level and proxy level. If the KVM already exists, an error is thrown and apigeecli does not proceed.
-
-### Issue: private KVM entries not exported.
-But you can use an Edge API Facade proxy (a.k.a. kvm-helper proxy) to get the values using KVM policy.
-
 
 # Support
 This is not an officially supported Google product.
