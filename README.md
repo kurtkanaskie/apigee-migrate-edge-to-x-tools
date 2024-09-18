@@ -51,7 +51,8 @@ Export from Edge
   - Custom [Python3](https://www.python.org/) scripts  
 - Import to X  
   - [apigeecli](https://github.com/apigee/apigeecli)  
-  - [Apigee API](https://cloud.google.com/apigee/docs/reference/apis/apigee/rest)  
+  - [Apigee API](https://cloud.google.com/apigee/docs/reference/apis/apigee/rest)
+    - [gcloud](https://cloud.google.com/sdk/gcloud)
 - Miscellaneous  
   - curl, git, jq
 
@@ -86,8 +87,8 @@ apigeecli version 2.4.2 date: 2024-09-13T12:42:30Z [commit: 494e144]
 ##############################################################
 # Set env variables
 export EDGE_X_MIGRATION_DIR=$HOME/work/APIGEEX/edge-x-migration
-export EDGE_ORG=amer-demo13
-export ENVS="test prod"
+export EDGE_ORG=your_org_name
+export ENVS="env1 env2"
 export EDGE_EXPORT_DIR=$EDGE_X_MIGRATION_DIR/edge-export
 mkdir $EDGE_EXPORT_DIR
 export EXPORTED_ORG_DIR=$EDGE_EXPORT_DIR/data-org-${EDGE_ORG}
@@ -185,15 +186,20 @@ for E in ${ENVS}; do
     mv data $EDGE_EXPORT_DIR/data-env-${E}
 done
 
+Using get_token:
 export EDGE_TOKEN=$(get_token)
 export EDGE_AUTH="Authorization: Bearer $EDGE_TOKEN"
+
+Or using a machine user credentials with base64:
+B64UNPW=$(echo -n 'username:password' | base64)
+export EDGE_AUTH="Authorization: Basic $B64UNPW"
 
 # Verify credentials
 curl -i -H "$EDGE_AUTH" https://api.enterprise.apigee.com/v1/organizations/$EDGE_ORG
 # Extract data
-curl -H "$EDGE_AUTH" https://api.enterprise.apigee.com/v1/organizations/$EDGE_ORG/apiproducts?expand=true | jq > $EDGE_EXPORT_DIR/apiproducts.json
-curl -H "$EDGE_AUTH" https://api.enterprise.apigee.com/v1/organizations/$EDGE_ORG/developers?expand=true | jq > $EDGE_EXPORT_DIR/developers.json
-curl -H "$EDGE_AUTH" https://api.enterprise.apigee.com/v1/organizations/$EDGE_ORG/apps?expand=true | jq > $EDGE_EXPORT_DIR/apps.json
+curl -s -H "$EDGE_AUTH" https://api.enterprise.apigee.com/v1/organizations/$EDGE_ORG/apiproducts?expand=true | jq > $EDGE_EXPORT_DIR/apiproducts.json
+curl -s -H "$EDGE_AUTH" https://api.enterprise.apigee.com/v1/organizations/$EDGE_ORG/developers?expand=true | jq > $EDGE_EXPORT_DIR/developers.json
+curl -s -H "$EDGE_AUTH" https://api.enterprise.apigee.com/v1/organizations/$EDGE_ORG/apps?expand=true | jq > $EDGE_EXPORT_DIR/apps.json
 ```
 
 # Convert from Edge to X apigeecli format
@@ -236,11 +242,13 @@ $APIGEE_MIGRATE_EDGE_TO_X_TOOLS_DIR/create-targetservers.sh
 # Import to X via apigeecli
 Use apigeecli to import converted data from $X_IMPORT_DATA
 
+**NOTES:**
+- If Data Residency has been used for your organziation, use the `--region=$REGION` option to set the prefix for the Apigee API. See [Available Apigee API control plane hosting jurisdictions](https://cloud.google.com/apigee/docs/locations#available-apigee-api-control-plane-hosting-jurisdictions) for more details.
+- Enable debug for more details using: APIGEECLI_DEBUG=true apigeecli …
+
 ```
 cd $X_IMPORT_DIR
 export TOKEN=$(gcloud auth print-access-token)
-
-# Enable debug for more details using: APIGEECLI_DEBUG=true apigeecli …
 
 #########################################
 # Proxies
@@ -355,7 +363,9 @@ pingstatus-oauth-v1
 
 # Clean target org
 
-**WARNING WARNING WARNING:** Use with caution, it deletes what's there, not just what you imported!
+**WARNING WARNING WARNING:** 
+
+Use with caution, it deletes what's there, not just what you imported!
 ```
 $APIGEE_MIGRATE_EDGE_TO_X_TOOLS_DIR/clearn-target-org.sh
 Your active configuration is: [apigeex-custom-non-prod]

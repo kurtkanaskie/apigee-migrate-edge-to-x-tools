@@ -4,10 +4,10 @@
 echo $EDGE_ORG
 echo $APIGEE_MIGRATE_EDGE_TO_X_TOOLS_DIR
 echo $EDGE_EXPORT_DIR
+echo $ENVS
 echo $X_IMPORT_DIR
 
 
-ENVS="test prod"
 for E in $ENVS
 do
     export EXPORTED_DIR=$EDGE_EXPORT_DIR/data-env-${E}
