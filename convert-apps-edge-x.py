@@ -9,13 +9,14 @@ else:
     print("Please provide filename for apps.json as an argument.")
     exit(1)
 
+
 # Open the file in read mode
 with open(apps_file, 'r') as file:
     # Load JSON data from the file
     json_data = json.load(file)
 
-# Iterate through apps and convert timestamps
-for app in json_data["app"]:
+# Iterate through array of app objects and convert timestamps
+for app in json_data:
     # Convert 'createdAt'
     app["createdAt"] = str(app["createdAt"])
 
@@ -27,8 +28,5 @@ for app in json_data["app"]:
         cred["expiresAt"] = str(cred["expiresAt"])
         cred["issuedAt"] = str(cred["issuedAt"])
 
-# Drop the property name 'apiProduct'
-result = json_data['app']
-
 # Print the modified JSON
-print(json.dumps(result, indent=4))
+print(json.dumps(json_data, indent=4))

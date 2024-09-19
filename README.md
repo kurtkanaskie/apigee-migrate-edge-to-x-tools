@@ -101,6 +101,17 @@ mkdir $X_IMPORT_DIR
 export APIGEE_MIGRATE_EDGE_TO_X_TOOLS_DIR=$EDGE_X_MIGRATION_DIR/apigee-migrate-edge-to-x-tools
 export APIGEE_MIGRATE_TOOL_DIR=$EDGE_X_MIGRATION_DIR/apigee-migrate-tool
 
+##############################################################
+Set Edge Authorization using get_token:
+export EDGE_TOKEN=$(get_token)
+export EDGE_AUTH="Authorization: Bearer $EDGE_TOKEN"
+
+Or using a machine user credentials with base64:
+B64UNPW=$(echo -n 'username:password' | base64)
+export EDGE_AUTH="Authorization: Basic $B64UNPW"
+
+# Verify credentials
+curl -i -H "$EDGE_AUTH" https://api.enterprise.apigee.com/v1/organizations/$EDGE_ORG
 cd $EDGE_X_MIGRATION_DIR
 ```
 
@@ -159,9 +170,9 @@ cp config-test.js config.js
 # Org level
 grunt exportProxies
 grunt exportSharedFlows 
-# grunt exportProducts # use output from Edge API instead
-# grunt exportApps # use output from Edge API instead
-# grunt exportDevs  # use output from Edge API instead
+# grunt exportProducts # use output from create-products.sh
+# grunt exportApps # use output from create-apps.sh
+# grunt exportDevs  # use output from create-developers.sh
 grunt exportReports
 
 grunt exportOrgKVM
@@ -186,21 +197,6 @@ for E in ${ENVS}; do
    
     mv data $EDGE_EXPORT_DIR/data-env-${E}
 done
-
-Using get_token:
-export EDGE_TOKEN=$(get_token)
-export EDGE_AUTH="Authorization: Bearer $EDGE_TOKEN"
-
-Or using a machine user credentials with base64:
-B64UNPW=$(echo -n 'username:password' | base64)
-export EDGE_AUTH="Authorization: Basic $B64UNPW"
-
-# Verify credentials
-curl -i -H "$EDGE_AUTH" https://api.enterprise.apigee.com/v1/organizations/$EDGE_ORG
-# Extract data
-curl -s -H "$EDGE_AUTH" https://api.enterprise.apigee.com/v1/organizations/$EDGE_ORG/apiproducts?expand=true | jq > $EDGE_EXPORT_DIR/apiproducts.json
-curl -s -H "$EDGE_AUTH" https://api.enterprise.apigee.com/v1/organizations/$EDGE_ORG/developers?expand=true | jq > $EDGE_EXPORT_DIR/developers.json
-curl -s -H "$EDGE_AUTH" https://api.enterprise.apigee.com/v1/organizations/$EDGE_ORG/apps?expand=true | jq > $EDGE_EXPORT_DIR/apps.json
 ```
 
 # Convert from Edge to X apigeecli format
@@ -219,11 +215,9 @@ cp $EDGE_EXPORT_DIR/data-org-${EDGE_ORG}/sharedflows/* sharedflows
 
 # API Products, Developers, Apps
 
-python3 ${APIGEE_MIGRATE_EDGE_TO_X_TOOLS_DIR}/convert-products-edge-x.py $EDGE_EXPORT_DIR/apiproducts.json | jq  > $X_IMPORT_DIR/products.json
-
-python3 ${APIGEE_MIGRATE_EDGE_TO_X_TOOLS_DIR}/convert-developers-edge-x.py $EDGE_EXPORT_DIR/developers.json | jq  > $X_IMPORT_DIR/developers.json
-
-python3 ${APIGEE_MIGRATE_EDGE_TO_X_TOOLS_DIR}/convert-apps-edge-x.py $EDGE_EXPORT_DIR/apps.json | jq  > $X_IMPORT_DIR/apps.json
+$APIGEE_MIGRATE_EDGE_TO_X_TOOLS_DIR/create-products.sh
+$APIGEE_MIGRATE_EDGE_TO_X_TOOLS_DIR/create-developers.sh
+$APIGEE_MIGRATE_EDGE_TO_X_TOOLS_DIR/create-apps.sh
 
 # Org KVMs, Proxy KVMs
 
