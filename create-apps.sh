@@ -16,15 +16,13 @@ then
 fi
 echo; echo Proceeding...
 
-ROWS=50
-ROWS_PLUS_ONE=$((ROWS + 1 ))
 RESULT='/tmp/apps.json'
 TMP_RESULT='/tmp/apps_batches.json'
 BATCH='/tmp/apps_batch.json'
 
-# Get the first batch of rows
+# Get the first batch
 # BUG: apptype doesn't filter results
-curl -s -H "$EDGE_AUTH" "https://api.enterprise.apigee.com/v1/organizations/$EDGE_ORG/apps?expand=true&apptype=developer&rows=$ROWS" | jq -r .app[:$ROWS] > $RESULT
+curl -s -H "$EDGE_AUTH" "https://api.enterprise.apigee.com/v1/organizations/$EDGE_ORG/apps?expand=true&apptype=developer" | jq -r .app > $RESULT
 COUNT=$(jq '. | length' $RESULT)
 echo FIRST_COUNT=$COUNT
 
@@ -32,9 +30,10 @@ while [ $COUNT -ne 0 ]
 do
     # Get the last appId for the startKey
     START_KEY=$(jq -r '.[-1].appId' $RESULT)
-    echo START_KEY=$START_KEY
+    # echo START_KEY=$START_KEY
 
-    curl -s -H "$EDGE_AUTH" "https://api.enterprise.apigee.com/v1/organizations/$EDGE_ORG/apps?expand=true&apptype=developer&rows=$ROWS_PLUS_ONE&startKey=$START_KEY" | jq -r .app[1:] > $BATCH
+    # Get all the records after the start key
+    curl -s -H "$EDGE_AUTH" "https://api.enterprise.apigee.com/v1/organizations/$EDGE_ORG/apps?expand=true&apptype=developer&startKey=$START_KEY" | jq -r .app[1:] > $BATCH
     COUNT=$(jq '. | length' $BATCH)
     echo BATCH_COUNT=$COUNT
 

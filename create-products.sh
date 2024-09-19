@@ -16,14 +16,12 @@ then
 fi
 echo; echo Proceeding...
 
-ROWS=50
-ROWS_PLUS_ONE=$((ROWS + 1 ))
 RESULT='/tmp/products.json'
 TMP_RESULT='/tmp/products_batches.json'
 BATCH='/tmp/products_batch.json'
 
 # Get the first batch of rows
-curl -s -H "$EDGE_AUTH" "https://api.enterprise.apigee.com/v1/organizations/$EDGE_ORG/apiproducts?expand=true&rows=$ROWS" | jq -r .apiProduct[:$ROWS] > $RESULT
+curl -s -H "$EDGE_AUTH" "https://api.enterprise.apigee.com/v1/organizations/$EDGE_ORG/apiproducts?expand=true" | jq -r .apiProduct > $RESULT
 COUNT=$(jq '. | length' $RESULT)
 echo FIRST_COUNT=$COUNT
 
@@ -31,9 +29,10 @@ while [ $COUNT -ne 0 ]
 do
     # Get the last product name for the startKey
     START_KEY=$(jq -r '.[-1].name' $RESULT)
-    echo START_KEY=$START_KEY
+    # echo START_KEY=$START_KEY
 
-    curl -s -H "$EDGE_AUTH" "https://api.enterprise.apigee.com/v1/organizations/$EDGE_ORG/apiproducts?expand=true&rows=$ROWS_PLUS_ONE&startKey=$START_KEY" | jq -r .apiProduct[1:] > $BATCH
+    # Get all the records after the start key
+    curl -s -H "$EDGE_AUTH" "https://api.enterprise.apigee.com/v1/organizations/$EDGE_ORG/apiproducts?expand=true&startKey=$START_KEY" | jq -r .apiProduct[1:] > $BATCH
     COUNT=$(jq '. | length' $BATCH)
     echo BATCH_COUNT=$COUNT
 

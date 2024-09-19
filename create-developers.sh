@@ -16,14 +16,12 @@ then
 fi
 echo; echo Proceeding...
 
-ROWS=50
-ROWS_PLUS_ONE=$((ROWS + 1 ))
 RESULT='/tmp/developers.json'
 TMP_RESULT='/tmp/developers_batches.json'
 BATCH='/tmp/developers_batch.json'
 
-# Get the first batch of rows
-curl -s -H "$EDGE_AUTH" "https://api.enterprise.apigee.com/v1/organizations/$EDGE_ORG/developers?expand=true&rows=$ROWS" | jq -r .developer[:$ROWS] > $RESULT
+# Get the first batch
+curl -s -H "$EDGE_AUTH" "https://api.enterprise.apigee.com/v1/organizations/$EDGE_ORG/developers?expand=true" | jq -r .developer > $RESULT
 COUNT=$(jq '. | length' $RESULT)
 echo FIRST_COUNT=$COUNT
 
@@ -31,9 +29,10 @@ while [ $COUNT -ne 0 ]
 do
     # Get the last email for the startKey
     START_KEY=$(jq -r '.[-1].email' $RESULT)
-    echo START_KEY=$START_KEY
+    # echo START_KEY=$START_KEY
 
-    curl -s -H "$EDGE_AUTH" "https://api.enterprise.apigee.com/v1/organizations/$EDGE_ORG/developers?expand=true&rows=$ROWS_PLUS_ONE&startKey=$START_KEY" | jq -r .developer[1:] > $BATCH
+    # Get all the records after the start key
+   curl -s -H "$EDGE_AUTH" "https://api.enterprise.apigee.com/v1/organizations/$EDGE_ORG/developers?expand=true&startKey=$START_KEY" | jq -r .developer[1:] > $BATCH
     COUNT=$(jq '. | length' $BATCH)
     echo BATCH_COUNT=$COUNT
 
