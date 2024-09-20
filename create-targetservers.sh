@@ -7,7 +7,6 @@ echo $EDGE_EXPORT_DIR
 echo $ENVS
 echo $X_IMPORT_DIR
 
-
 for E in $ENVS
 do
     export EXPORTED_DIR=$EDGE_EXPORT_DIR/data-env-${E}

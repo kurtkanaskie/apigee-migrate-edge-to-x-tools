@@ -1,8 +1,6 @@
 #! /bin/bash
 
-TBD
 echo $EDGE_ORG
-echo $ENVS
 echo $APIGEE_MIGRATE_EDGE_TO_X_TOOLS_DIR
 echo $EDGE_EXPORT_DIR
 echo $X_IMPORT_DIR

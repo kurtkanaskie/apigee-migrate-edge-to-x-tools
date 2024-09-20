@@ -8,14 +8,6 @@ echo $APIGEE_MIGRATE_EDGE_TO_X_TOOLS_DIR
 echo $EDGE_EXPORT_DIR
 echo $X_IMPORT_DIR
 
-read -p "OK to proceed (Y/n)? " i
-if [ "$i" != "Y" ]
-then
-  echo aborted
-  exit 1
-fi
-echo; echo Proceeding...
-
 RESULT='/tmp/apps.json'
 TMP_RESULT='/tmp/apps_batches.json'
 BATCH='/tmp/apps_batch.json'

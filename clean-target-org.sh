@@ -5,7 +5,9 @@ export ORG=$X_ORG
 echo ORG=$ORG
 
 echo '*******************************************'
-echo; echo WARNING WARNING WARNING
+echo WARNING WARNING WARNING
+echo This will attempt to remove all resources from the org, not just the ones that were imported!
+echo WARNING WARNING WARNING
 echo '*******************************************'
 
 read -p "OK to proceed (Y/n)? " i
@@ -18,24 +20,19 @@ echo Proceeding...
 
 export TOKEN=$(gcloud auth print-access-token)
 
-echo; echo Cleaning Apps
-for APP in $(apigeecli -t $TOKEN --org=$ORG apps list | jq -r .app[].appId)
-do 
-    echo APP: $APP
-    apigeecli -t $TOKEN --org=$ORG apps delete --id=$APP
-done
-
-echo; echo Cleaning API Products
-for PRODUCT in $(apigeecli -t $TOKEN --org=$ORG products list | jq -r .apiProduct[].name)
-do 
-    echo PRODUCT: $PRODUCT
-    apigeecli -t $TOKEN --org=$ORG products delete --name=$PRODUCT
-done
-echo; echo Cleaning Developers
+echo; echo Cleaning Developers also removes Apps
 for DEVELOPER in $(apigeecli -t $TOKEN --org=$ORG developers list | jq -r .developer[].email)
 do 
     echo DEVELOPER: $DEVELOPER
     apigeecli -t $TOKEN --org=$ORG developers delete --email=$DEVELOPER
+done
+
+echo; echo Cleaning API Products
+PRODUCTS=$(apigeecli -t $TOKEN --org=$ORG products list | jq .apiProduct[].name)
+for PRODUCT in $(apigeecli -t $TOKEN --org=$ORG products list | jq .apiProduct[].name)
+do 
+    echo PRODUCT: $PRODUCT
+    apigeecli -t $TOKEN --org=$ORG products delete --name=$PRODUCT
 done
 
 echo; echo Cleaning Proxies
@@ -81,8 +78,8 @@ do
       for KVM in $KVMS
         do 
             echo PROXY KVMS: $PROXY $KVM ================================
-            echo apigeecli --org=$ORG --proxy=$PROXY kvms delete --name=$KVM
-            # apigeecli -t $TOKEN --org=$ORG --proxy=$PROXY kvms delete --name=$KVM
+            # echo apigeecli --org=$ORG --proxy=$PROXY kvms delete --name=$KVM
+            apigeecli -t $TOKEN --org=$ORG --proxy=$PROXY kvms delete --name=$KVM
         done
     fi
 done
