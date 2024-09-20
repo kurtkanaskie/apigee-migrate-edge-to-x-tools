@@ -6,14 +6,15 @@ This is a set of tools, scripts and code to export Apigee Edge data, convert to 
 
 Importing proxies and sharedflows will succeed if they do not use unsupported policies or features in X. The import tool (apigeecli) will show details of what policies and features are not supported.
 
-Importing Developers converts emails to lower case.
-Importing API Products and Apps copies the credentials (API key and secret).
+Importing Developers requires emails to lower case. This may be an issue as Apigee Edge emails are case sensitive, meaning that "CaseSensitive@any.com" and "casesensitive@any.com" are different developers in Edge but they will be the same in X.
+
+Importing Developers and Apps copies the credentials (API key and secret).
 
 Flow: 
 
-1. Export from Edge using apigee-migrate-tool and Edge API (edge-export folder) 
-2. Convert Edge data to X format using bash and python (x-import folder)
-3. Import to X using apigeecli
+1. Export from Edge using apigee-migrate-tool and Edge API (writes to $EDGE_EXPORT_DIR)
+2. Convert Edge data to X format using bash and python (writes to $X_IMPORT_DIR)
+3. Import to X using apigeecli (reads from $X_IMPORT_DIR)
 
 # Coverage
 
@@ -396,6 +397,9 @@ bundle wsdl-pass-through-calc not imported: (HTTP 400) {
 ```
 
 # Show what's been imported
+## Use show-target-org.sh
+See the complete target organization artifacts.
+
 ```
 $APIGEE_MIGRATE_EDGE_TO_X_TOOLS_DIR/show-target-org.sh
 Your active configuration is: [apigeex-custom-non-prod]
@@ -457,6 +461,33 @@ pingstatus-oauth-v1
 ENV TARGETSERVERS: test ================================
 oauth-v1
 pingstatus-oauth-v1
+```
+## Compare Individual Counts
+### Developers
+Remove `wc -l` to compare sorted emails, discrepancy could be due to case sensitive emails not being supported.
+```
+curl -s -H "$EDGE_AUTH" https://api.enterprise.apigee.com/v1/organizations/$EDGE_ORG/developers | jq -r .[] | sort | wc -l
+    77
+apigeecli --token=$TOKEN --org=$X_ORG developers list | jq -r .developer[].email | sort | wc -l
+    74
+```
+
+### Apps
+Returns appIds, discrepancy could be due to Company Apps not being supported.
+```
+curl -s -H "$EDGE_AUTH" https://api.enterprise.apigee.com/v1/organizations/$EDGE_ORG/apps | jq -r .[] | wc -l
+    107
+apigeecli --token=$TOKEN --org=$X_ORG apps list | jq .app[].appId | wc -l
+    106
+```
+
+### API Products
+Remove `wc -l` to compare names
+```
+curl -s -H "$EDGE_AUTH" https://api.enterprise.apigee.com/v1/organizations/$EDGE_ORG/apiproducts | jq .[] | sort | wc -l
+    83
+apigeecli --token=$TOKEN --org=$X_ORG products list | jq .apiProduct[].name | sort | wc -l
+    83
 ```
 
 # Clean target org
