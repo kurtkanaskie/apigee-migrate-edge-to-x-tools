@@ -22,7 +22,7 @@ Flow:
   - [x] Proxies  
   - [x] Sharedflows  
   - [x] KVMs  
-    - [x] Encrypted entries only with kvm helper proxy  
+    - [x] Encrypted entries only with kvm helper proxy
   - [x] Developers  
   - [x] API Products  
   - [x] Apps and keys  
@@ -32,10 +32,10 @@ Flow:
   - [x] Target Servers  
      - [ ] Keystores, Truststores  
   - [x] KVMs  
-     - [ ] Encrypted entries only with kvm helper proxy  
+     - [x] Encrypted entries only with kvm helper proxy
 - [ ] Proxy level  
   - [x] KVMs  
-     - [ ] Encrypted entries only with kvm helper proxy
+     - [x] Encrypted entries only with kvm helper proxy
 
 # Background
 
