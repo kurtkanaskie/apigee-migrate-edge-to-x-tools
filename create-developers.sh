@@ -8,7 +8,7 @@ echo $APIGEE_MIGRATE_EDGE_TO_X_TOOLS_DIR
 echo $EDGE_EXPORT_DIR
 echo $X_IMPORT_DIR
 EDGE_COUNT=500
-echo $EDGE_COUNT
+echo EDGE_COUNT=$EDGE_COUNT
 
 RESULT='/tmp/developers.json'
 TMP_RESULT='/tmp/developers_batches.json'
@@ -24,7 +24,7 @@ do
     # Get the last email for the startKey
     START_KEY=$(jq -r '.[-1].email' $RESULT)
     # echo START_KEY=$START_KEY
-    URL_ENCODED_START_KEY=$(curl -s --data-urlencode "email=$START_KEY" https://mocktarget.apigee.net/echo | jq -r .body | cut -f 2 -d '=')
+    URL_ENCODED_START_KEY=${START_KEY//+/%2B}
     # echo URL_ENCODED_START_KEY=$URL_ENCODED_START_KEY
 
     # Get all the records after the start key
