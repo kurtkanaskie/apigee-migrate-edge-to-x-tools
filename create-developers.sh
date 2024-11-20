@@ -7,13 +7,15 @@ echo $EDGE_ORG
 echo $APIGEE_MIGRATE_EDGE_TO_X_TOOLS_DIR
 echo $EDGE_EXPORT_DIR
 echo $X_IMPORT_DIR
+EDGE_COUNT=500
+echo $EDGE_COUNT
 
 RESULT='/tmp/developers.json'
 TMP_RESULT='/tmp/developers_batches.json'
 BATCH='/tmp/developers_batch.json'
 
 # Get the first batch
-curl -s -H "$EDGE_AUTH" "https://api.enterprise.apigee.com/v1/organizations/$EDGE_ORG/developers?expand=true" | jq -r .developer > $RESULT
+curl -s -H "$EDGE_AUTH" "https://api.enterprise.apigee.com/v1/organizations/$EDGE_ORG/developers?expand=true&count=$EDGE_COUNT" | jq -r .developer > $RESULT
 COUNT=$(jq '. | length' $RESULT)
 echo FIRST_COUNT=$COUNT
 
@@ -22,9 +24,11 @@ do
     # Get the last email for the startKey
     START_KEY=$(jq -r '.[-1].email' $RESULT)
     # echo START_KEY=$START_KEY
+    URL_ENCODED_START_KEY=$(curl -s --data-urlencode "email=$START_KEY" https://mocktarget.apigee.net/echo | jq -r .body | cut -f 2 -d '=')
+    # echo URL_ENCODED_START_KEY=$URL_ENCODED_START_KEY
 
     # Get all the records after the start key
-   curl -s -H "$EDGE_AUTH" "https://api.enterprise.apigee.com/v1/organizations/$EDGE_ORG/developers?expand=true&startKey=$START_KEY" | jq -r .developer[1:] > $BATCH
+    curl -s -H "$EDGE_AUTH" "https://api.enterprise.apigee.com/v1/organizations/$EDGE_ORG/developers?expand=true&count=$EDGE_COUNT&startKey=$URL_ENCODED_START_KEY" | jq -r .developer[1:] > $BATCH
     COUNT=$(jq '. | length' $BATCH)
     echo BATCH_COUNT=$COUNT
 

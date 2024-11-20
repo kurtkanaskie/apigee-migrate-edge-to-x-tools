@@ -6,15 +6,15 @@ This is a set of tools, scripts and code to export Apigee Edge data, convert to 
 
 Importing proxies and sharedflows will succeed if they do not use unsupported policies or features in X. The import tool (apigeecli) will show details of what policies and features are not supported.
 
-Importing Developers requires emails to lower case. This may be an issue as Apigee Edge emails are case sensitive, meaning that "CaseSensitive@any.com" and "casesensitive@any.com" are different developers in Edge but they will be the same in X.
+Importing Developers requires emails to be lower case. This may be an issue as Apigee Edge emails are case sensitive, meaning that "CaseSensitive@any.com" and "casesensitive@any.com" are different developers in Edge but they will be the same in X.
 
 Importing Developers and Apps copies the credentials (API key and secret).
 
 Flow: 
 
-1. Export from Edge using apigee-migrate-tool and Edge API (writes to $EDGE_EXPORT_DIR)
+1. Export from Edge using [apigee-migrate-tool](https://github.com/apigeecs/apigee-migrate-tool) and [Edge API](https://apidocs.apigee.com/apis)  (writes to $EDGE_EXPORT_DIR)
 2. Convert Edge data to X format using bash and python (writes to $X_IMPORT_DIR)
-3. Import to X using apigeecli (reads from $X_IMPORT_DIR)
+3. Import to X using [apigeecli](https://github.com/apigee/apigeecli) (reads from $X_IMPORT_DIR)
 
 # Coverage
 
@@ -220,12 +220,9 @@ done
 View the results of the export, for example:
 ```
 ls -l $EDGE_EXPORT_DIR
--rw-r--r--  1 user  primarygroup  175249 Sep 20 10:43 apps.json
 drwxr-xr-x  5 user  primarygroup     160 Sep 20 10:27 data-env-prod
 drwxr-xr-x  5 user  primarygroup     160 Sep 20 10:27 data-env-test
 drwxr-xr-x  6 user  primarygroup     192 Sep 20 10:13 data-org-amer-demo13
--rw-r--r--  1 user  primarygroup   56075 Sep 20 10:43 developers.json
--rw-r--r--  1 user  primarygroup   64793 Sep 20 10:43 products.json
 ```
 ```
 tree $EDGE_EXPORT_DIR
@@ -252,27 +249,26 @@ tree $EDGE_EXPORT_DIR
 │   └── targetservers
 │       ├── oauth-v1
 │       └── pingstatus-v1
-├── data-org-amer-demo13
-│   ├── kvm
-│   │   ├── org
-│   │   │   ├── org-config
-│   │   │   └── org-config-private
-│   │   └── proxy
-│   │       ├── kvm-demo
-│   │       │   └── kvm-demo
-│   │       └── pingstatus-v1
-│   │           └── pingstatus-v1-kvm1
-│   ├── proxies
-│   │   ├── oauth-v1
-│   │   └── pingstatus-v1
-│   ├── reports
-│   │   ├── 0a5ee23f-1947-4188-8bf5-7beb4007f3fe
-│   │   └── fe17c0e3-0769-4072-9566-f1b557a4aab5
-│   └── sharedflows
-│       ├── AccessControl.zip
-│       └── GetLogValues.zip
-├── developers.json
-└── products.json
+└── data-org-amer-demo13
+    ├── kvm
+    │   ├── org
+    │   │   ├── org-config
+    │   │   └── org-config-private
+    │   └── proxy
+    │       ├── kvm-demo
+    │       │   └── kvm-demo
+    │       └── pingstatus-v1
+    │           └── pingstatus-v1-kvm1
+    ├── proxies
+    │   ├── oauth-v1
+    │   └── pingstatus-v1
+    ├── reports
+    │   ├── 0a5ee23f-1947-4188-8bf5-7beb4007f3fe
+    │   └── fe17c0e3-0769-4072-9566-f1b557a4aab5
+    └── sharedflows
+        ├── AccessControl.zip
+        └── GetLogValues.zip
+
 ```
 
 # Convert from Edge to X apigeecli format
