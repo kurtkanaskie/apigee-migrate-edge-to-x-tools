@@ -22,7 +22,7 @@ Flow:
   - [x] Proxies  
   - [x] Sharedflows  
   - [x] KVMs  
-    - [x] Encrypted entries only with kvm helper proxy
+    - [x] Encrypted entries only with kvm helper proxy (see https://github.com/kurtkanaskie/apigee-edge-facade-v1)
   - [x] Developers  
   - [x] API Products  
   - [x] Apps and keys  
@@ -32,10 +32,10 @@ Flow:
   - [x] Target Servers  
      - [ ] Keystores, Truststores  
   - [x] KVMs  
-     - [x] Encrypted entries only with kvm helper proxy
+     - [x] Encrypted entries only with kvm helper proxy (see https://github.com/kurtkanaskie/apigee-edge-facade-v1)
 - [ ] Proxy level  
   - [x] KVMs  
-     - [x] Encrypted entries only with kvm helper proxy
+     - [x] Encrypted entries only with modifications to proxy to retrieve encrypted values vai KVM policy.
 
 # Background
 
@@ -187,6 +187,8 @@ module.exports = {
 The apigee-migrate-tool outputs data to the `data`.
 
 **NOTE:** Since apigee-migrate-tool does not create a sub-directory for envs for target servers or flowhooks, do the extract at the org level and then for each environment separate directories.
+
+**NOTE 2:** exportOrgKVM, exportProxyKVM and exportEnvKVM only work for non-encrypted entries, see https://github.com/kurtkanaskie/apigee-edge-facade-v1 for an alternate solution to export encrypted entries in a format suitable for import using apigeecli.
 ```
 cp config-test.js config.js
 
@@ -195,7 +197,7 @@ grunt exportProxies
 grunt exportSharedFlows 
 grunt exportReports
 
-grunt exportOrgKVM
+grunt exportOrgKVM                       # see NOTE 2 above
 # Remove any unwanted KVMs, for example:
 rm data/kvm/org/CustomReports${EDGE_ORG}*
 rm data/kvm/org/privacy
@@ -210,7 +212,7 @@ for ENV in ${ENVS}; do
     echo ===========================
     echo ENV=$ENV
     cp config-$ENV.js config.js
-    grunt exportEnvKVM
+    grunt exportEnvKVM                   # see NOTE 2 above
     grunt exportTargetServers
     grunt exportFlowHooks
    
