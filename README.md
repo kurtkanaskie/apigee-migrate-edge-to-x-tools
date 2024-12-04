@@ -339,19 +339,19 @@ export TOKEN=$(gcloud auth print-access-token)
 
 #########################################
 # Proxies
-apigeecli --token=$TOKEN --org=$ORG apis import --folder=$X_IMPORT_DIR/proxies
+apigeecli --token=$TOKEN --org=$X_ORG apis import --folder=$X_IMPORT_DIR/proxies
 
 #########################################
 # Shared Flows
-apigeecli --token=$TOKEN --org=$ORG sharedflows import --folder=$X_IMPORT_DIR/sharedflows
+apigeecli --token=$TOKEN --org=$X_ORG sharedflows import --folder=$X_IMPORT_DIR/sharedflows
 
 #########################################
-apigeecli --token=$TOKEN --org=$ORG kvms import --folder=$X_IMPORT_DIR
+apigeecli --token=$TOKEN --org=$X_ORG kvms import --folder=$X_IMPORT_DIR
 
 #########################################
 # Target Servers
 for E in ${ENVS}; do
-    apigeecli --token=$TOKEN --org=$ORG --env=$E targetservers import --file $X_IMPORT_DIR/${E}__targetservers.json
+    apigeecli --token=$TOKEN --org=$X_ORG --env=$E targetservers import --file $X_IMPORT_DIR/${E}__targetservers.json
 done
 
 #########################################
