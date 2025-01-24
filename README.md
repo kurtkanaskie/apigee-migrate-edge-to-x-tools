@@ -33,9 +33,11 @@ Flow:
      - [ ] Keystores, Truststores  
   - [x] KVMs  
      - [x] Encrypted entries only with kvm helper proxy (see https://github.com/kurtkanaskie/apigee-edge-facade-v1)
-- [ ] Proxy level  
+- [x] Proxy level
   - [x] KVMs  
      - [x] Encrypted entries only with modifications to proxy to retrieve encrypted values vai KVM policy.
+- [x] Runtime
+  - [x] OAuth access and refresh token adoption (see https://github.com/kurtkanaskie/edge-to-X-oauth-token-migration)
 
 # Background
 
